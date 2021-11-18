@@ -5,6 +5,16 @@ import (
 	"strings"
 )
 
+func bar(x int) string {
+	s := strings.Repeat("\u2588", x/8)
+	mod := x % 8
+	if mod == 0 {
+		return s + " "
+	}
+	c := 0x258f - (mod - 1)
+	return s + fmt.Sprintf("%c", c)
+}
+
 func printHistogram(values []float64, min float64, max float64) {
 	binCount := 10
 	bins := make([]int, binCount)
@@ -25,9 +35,7 @@ func printHistogram(values []float64, min float64, max float64) {
 	}
 
 	fmt.Printf("\nhistogram (bins=%d)\n", binCount)
-
 	for _, v := range bins {
-		length := v / maxBin * 70
-		fmt.Printf("%3d: %s\n", v, strings.Repeat(".", length))
+		fmt.Printf("%3d: %s\n", v, bar(v))
 	}
 }
