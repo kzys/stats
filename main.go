@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"sort"
@@ -10,6 +11,27 @@ import (
 
 	"github.com/spf13/pflag"
 )
+
+func printSummary(f io.Writer, values []float64) {
+	var sum float64
+
+	for _, f := range values {
+		sum += f
+	}
+
+	min := values[0]
+	max := values[len(values)-1]
+
+	fmt.Fprintf(f, "avg: %.2f\n", sum/float64(len(values)))
+	fmt.Fprintf(f, "min: %.2f\n", min)
+
+	percentiles := []float64{0.5, 0.9, 0.99}
+	for _, p := range percentiles {
+		index := float64(len(values)-1) * p
+		fmt.Fprintf(f, "p%.f: %.2f\n", p*100, values[int(index)])
+	}
+	fmt.Fprintf(f, "max: %.2f\n", max)
+}
 
 func main() {
 	ws := regexp.MustCompile(`\s+`)
@@ -49,18 +71,10 @@ func main() {
 	}
 
 	sort.Float64Slice(values).Sort()
+
 	min := values[0]
 	max := values[len(values)-1]
 
-	fmt.Printf("avg: %.2f\n", sum/float64(len(values)))
-	fmt.Printf("min: %.2f\n", min)
-
-	percentiles := []float64{0.5, 0.9, 0.99}
-	for _, p := range percentiles {
-		index := float64(len(values)-1) * p
-		fmt.Printf("p%.f: %.2f\n", p*100, values[int(index)])
-	}
-	fmt.Printf("max: %.2f\n", max)
-
+	printSummary(os.Stdout, values)
 	printHistogram(values, min, max)
 }
