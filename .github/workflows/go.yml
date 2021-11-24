@@ -22,4 +22,9 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: go test -v ./...
+      run: make test
+
+    - name: codecov
+      uses: codecov/codecov-action@v2
+      with:
+        files: tmp/coverage.out

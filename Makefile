@@ -4,4 +4,5 @@ stats:
 	go build
 
 test:
-	go test -v -cover -race ./...
+	mkdir -p tmp
+	go test -v -cover -coverprofile=tmp/coverage.out -race ./...
