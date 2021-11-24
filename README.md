@@ -1,5 +1,7 @@
 # stats
 
+[![codecov](https://codecov.io/gh/kzys/stats/branch/main/graph/badge.svg?token=ELKDO3ZZ8T)](https://codecov.io/gh/kzys/stats)
+
 stats is a command line tool to calculate summary statistics
 
 ```
