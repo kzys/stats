@@ -18,24 +18,21 @@ func bar(x int) string {
 func printHistogram(values []float64, min float64, max float64) {
 	binCount := 10
 	bins := make([]int, binCount)
-	binSize := (max - min) / float64(binCount)
-	end := binSize
+	binSize := (max - min + 1) / float64(binCount)
+	end := min + binSize
 	var index int
-	var maxBin int
 	for _, v := range values {
-		if v > end {
-			end += binSize
+		if v >= end {
 			index++
-			continue
+			end += binSize
 		}
 		bins[index]++
-		if bins[index] > maxBin {
-			maxBin = bins[index]
-		}
 	}
 
-	fmt.Printf("\nhistogram (bins=%d)\n", binCount)
-	for _, v := range bins {
-		fmt.Printf("%3d: %s\n", v, bar(v))
+	fmt.Printf("\nhistogram (binSize=%.2f, bins=%d)\n", binSize, binCount)
+	for i, v := range bins {
+		begin := min + float64(i)*binSize
+		end := min + float64(i+1)*binSize
+		fmt.Printf("[%.2f, %.2f) %3d: %s\n", begin, end, v, bar(v))
 	}
 }
