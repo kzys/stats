@@ -23,7 +23,7 @@ func printHistogram(values []float64, min float64, max float64) {
 	var index int
 	var maxBin int
 	for _, v := range values {
-		if v >= end {
+		for v >= end {
 			index++
 			end += binSize
 		}
@@ -55,8 +55,15 @@ func printHistogram(values []float64, min float64, max float64) {
 	if scale < 1.0 {
 		scale = 1.0
 	}
+
 	for index, line := range lines {
 		w := float64(bins[index]) / scale
+
+		// Non-zero bins should be different from zero bins,
+		// even it looks size-wise inaccurate.
+		if bins[index] > 0 && int(w) == 0 {
+			w = 1
+		}
 		fmt.Printf("%s%s\n", line, bar(int(w)))
 	}
 }
