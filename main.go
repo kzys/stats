@@ -51,7 +51,6 @@ func main() {
 		rows = append(rows, columns)
 	}
 
-	var sum float64
 	values := make([]float64, 0)
 
 	if *key != 0 {
@@ -66,8 +65,10 @@ func main() {
 				continue
 			}
 			values = append(values, f)
-			sum += f
 		}
+	} else {
+		pflag.Usage()
+		os.Exit(1)
 	}
 
 	sort.Float64Slice(values).Sort()
