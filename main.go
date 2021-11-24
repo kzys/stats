@@ -33,11 +33,22 @@ func printSummary(f io.Writer, values []float64) {
 	fmt.Fprintf(f, "max: %.2f\n", max)
 }
 
-func main() {
+func realMain() error {
 	ws := regexp.MustCompile(`\s+`)
 
 	key := pflag.IntP("key", "k", 0, "key")
+	re := pflag.StringP("regexp", "r", "", "regexp")
 	pflag.Parse()
+
+	var pattern *regexp.Regexp
+	if *re != "" {
+		var err error
+		pattern, err = regexp.Compile(*re)
+		if err != nil {
+			return err
+		}
+		*key = 1
+	}
 
 	rows := make([][]string, 0)
 
@@ -47,8 +58,14 @@ func main() {
 		if err != nil {
 			break
 		}
-		columns := ws.Split(line, -1)
-		rows = append(rows, columns)
+
+		if pattern != nil {
+			matches := pattern.FindStringSubmatch(line)
+			rows = append(rows, matches)
+		} else {
+			columns := ws.Split(line, -1)
+			rows = append(rows, columns)
+		}
 	}
 
 	values := make([]float64, 0)
@@ -78,4 +95,14 @@ func main() {
 
 	printSummary(os.Stdout, values)
 	printHistogram(values, min, max)
+
+	return nil
+}
+
+func main() {
+	err := realMain()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s: %s\n", os.Args[0], err.Error())
+		os.Exit(1)
+	}
 }
