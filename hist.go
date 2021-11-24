@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+const binCount = 10
+
 func bar(x int) string {
 	s := strings.Repeat("\u2588", x/8)
 	mod := x % 8
@@ -15,8 +17,7 @@ func bar(x int) string {
 	return s + fmt.Sprintf("%c", c)
 }
 
-func printHistogram(values []float64, min float64, max float64) {
-	binCount := 10
+func histogram(values []float64, min float64, max float64) ([]int, float64, int) {
 	bins := make([]int, binCount)
 	binSize := (max - min + 1) / float64(binCount)
 	end := min + binSize
@@ -32,7 +33,11 @@ func printHistogram(values []float64, min float64, max float64) {
 			maxBin = bins[index]
 		}
 	}
+	return bins, binSize, maxBin
+}
 
+func printHistogram(values []float64, min float64, max float64) {
+	bins, binSize, maxBin := histogram(values, min, max)
 	fmt.Printf("\nhistogram (binSize=%.2f, bins=%d)\n", binSize, binCount)
 
 	tw := &tableWriter{}
